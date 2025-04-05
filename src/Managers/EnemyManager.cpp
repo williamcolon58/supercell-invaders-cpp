@@ -323,6 +323,8 @@ void EnemyManager::cleanUp() {
     ufoSeen = false;
     ortSeen = false;
     bossHasDied();
+    pointsPerUpdateCycle = 0;
+    killSpreeTimer = 0;
 }
 
 

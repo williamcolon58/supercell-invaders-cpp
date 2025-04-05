@@ -1,4 +1,5 @@
 #include "ShipBattle.h"
+#include "EnemyManager.h"
 
 // ====================================
 // Constructor & Destructor Section
@@ -12,7 +13,6 @@ ShipBattle::ShipBattle() {
     font.load("Fonts/Orbitron.ttf", 20, true);
     indicatorFont.load("Fonts/Orbitron.ttf", 10, true);
     backgroundImage.load("Menu_Images/BattleArea.jpg");
-
 }
 
 // ====================================
@@ -49,7 +49,9 @@ void ShipBattle::update() {
 
     // State switching logic for when the player dies
     if (this->player->health <= 0) {
-        
+        player->loseLife();
+
+        if(player->getLives() <= 0){
         this->setNextState("GameOverState");
         SoundManager::stopSong("battle");
         if(EnemyManager::getSpawningBossType() != ""){
@@ -62,6 +64,15 @@ void ShipBattle::update() {
                 scoreFile.close();
             }
             this->setFinished(true);
+        } else {
+            EnemyManager::cleanUp();
+            player->pos.set(ofGetWidth()/2, ofGetHeight()/2);
+            player->health = 100;
+            player->bullets.clear();
+            ofSetColor(ofColor::red);
+            font.drawString("LIFE LOST!" , player->pos.x - 30, player->pos.y - 40);
+            SoundManager::playSong("button", false);
+        }
     }
 }
 
@@ -73,6 +84,8 @@ void ShipBattle::draw() {
     // Draw the score
     ofSetColor(ofColor::white);
     font.drawString("SCORE " + to_string(playerScore), ofGetWidth() / 2 - 50, 50);
+    float livesTextWidth = font.getStringBoundingBox("LIVES: ", 0 , 0).width;
+    indicatorFont.drawString("LIVES: " + to_string(player->getLives()), 15, 30);
 
     // Draw enemies and player
     EnemyManager::drawEnemies();
@@ -92,14 +105,19 @@ void ShipBattle::draw() {
 
     // Draw UI elements
     healthBar(player->health, 100);
+    ofSetColor(ofColor::red);
+    float circleStartX = 15 + livesTextWidth + 10;
+    for(int i = 0; i < player->getLives(); i++) {
+        ofDrawCircle(circleStartX + (i * 25), 25, 8);
+    }
     killSpreeTimer(this->killspreeTimer, 150);
     
     //Draw a mini box for the bomb. Make sure to draw the bomb inside this box.
         ofNoFill();
         ofDrawRectangle(ofGetWidth() - 150, 30, 50, 50);
         ofFill();
-    
 }
+
 
 // ====================================
 // Input Handling Section
@@ -114,12 +132,18 @@ void ShipBattle::keyPressed(int key) {
         player->showHitbox = !player->showHitbox;
     }
     if(key == 'o')  player->health = 100;
-    if(key == 'p')  playerScore += 10000; 
+    if(key == 'p')  playerScore += 10000;
+    if(key == OF_KEY_SHIFT){
+        player->setSprinting(true);
+    } 
 }
 
 void ShipBattle::keyReleased(int key) {
     key = tolower(key);
     this->player->removePressedKey(key);
+    if(key == OF_KEY_SHIFT){
+        player->setSprinting(false);
+    }
 }
 
 void ShipBattle::mousePressed(int x, int y, int button) {
@@ -156,22 +180,26 @@ void ShipBattle::updateBullets() {
 // UI and Feedback Methods Section
 // ====================================
 void ShipBattle::healthBar(int currHealth, int maxHealth) {
-    indicatorFont.drawString("HEALTH", 10, 30);
+    int barX = 85;
+    int barY = 50;
+    indicatorFont.drawString("HEALTH", 10, barY + 15);
     ofNoFill();
-    ofDrawRectangle(10, 40, maxHealth *2, 20);
+    ofDrawRectangle(barX, barY, maxHealth *2, 20);
     ofFill();
     ofSetColor(ofColor::green);
-    ofDrawRectangle(10, 40, currHealth *2, 20);
+    ofDrawRectangle(barX, barY, currHealth *2, 20);
     ofSetColor(ofColor::white);
 }
 
 void ShipBattle::killSpreeTimer(int currTimer, int maxTimer) {
-    indicatorFont.drawString("KILL SPREE", 10, 80);
+    int barX = 110;
+    int barY = 80;
+    indicatorFont.drawString("KILL SPREE", 10, barY + 10);  
     ofNoFill();
-    ofDrawRectangle(10, 90, maxTimer, 10);
+    ofDrawRectangle(barX, barY, maxTimer, 10);
     ofFill();
     ofSetColor(ofColor::red);
-    ofDrawRectangle(10, 90, currTimer, 10);
+    ofDrawRectangle(barX, barY, currTimer, 10);
     ofSetColor(ofColor::white);
 }
 
@@ -193,6 +221,17 @@ double ShipBattle::scoreMultiplier() {
 }
 
 void ShipBattle::reset(){
+    delete player;
+    player = new Player(ofGetWidth() / 2, ofGetHeight() / 2);
+
+    playerScore = 0;
+    killspreeTimer = 0;
+
+    EnemyManager::cleanUp();
+    playerScore = 0;
+    killspreeTimer = 0;
+
+
     setFinished(false);
     setNextState("");
 }

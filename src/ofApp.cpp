@@ -42,24 +42,26 @@ void ofApp::update(){
 
     // State switching
     if(currentState->hasFinished()){
-        if(currentState->getNextState() == "IntroState") {
-            SoundManager::playSong("intro", true);
-            currentState = intro;    
-        }
+        string nextState = currentState->getNextState();
         
-        else if(currentState->getNextState() == "BattleState"){
+        if(nextState == "IntroState"){
+            SoundManager::playSong("intro", true);
+            currentState = intro;
+        }
+        else if(nextState == "BattleState"){
             SoundManager::playSong("battle", true);
+            battle->reset();
+
             currentState = battle;
         }
-
-        else if(currentState->getNextState() == "GameOverState") {
+        else if(nextState == "GameOverState"){
             SoundManager::playSong("intro", true);
             currentState = gameOver;
         }
         currentState->reset();
     }
-
 }
+ 
 
 //--------------------------------------------------------------
 

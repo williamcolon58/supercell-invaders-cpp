@@ -6,6 +6,7 @@ Player::Player(int Xposition, int Yposition){
     pos.x = Xposition;
     pos.y = Yposition;
     health = 100;
+    lives = 3;
     velocity.set(0, 0);
     this->shipSprite.load("ShipModels/shipModel2.png");
 
@@ -16,6 +17,10 @@ Player::Player(int Xposition, int Yposition){
             
     lastShotTime = 0;
     shotCooldown = 0.1;  // Set the cooldown duration to 0.5 seconds (adjust as needed)
+    normalSpeed = 5.0f;
+    sprintSpeed = 10.0f;
+    isSprinting = false;
+    maxSpeed = normalSpeed;
 
 }
 
@@ -31,6 +36,13 @@ void Player::draw() {
             ofPushMatrix();
             ofTranslate(this->pos.x, this->pos.y);
             ofRotateDeg(shipOrientation);
+            if (isSprinting) {
+                ofSetColor(ofColor::yellow, 100); 
+                ofDrawCircle(0, 0, 30); 
+                ofSetColor(ofColor::blue);
+                ofDrawRectangle(pos.x - 20, pos.y - 40, 40 * (sprintEnergy / 100.0f), 5);
+                ofSetColor(ofColor::white); 
+            }
 
             this->shipSprite.draw(-20, -20, 45, 45);
 
@@ -41,6 +53,12 @@ void Player::draw() {
 }
 
 void Player::update() {
+    if (isSprinting) {
+        sprintEnergy = max(sprintEnergy - energyDrainRate, 0.0f);
+        if (sprintEnergy <= 0) setSprinting(false); 
+    } else {
+        sprintEnergy = min(sprintEnergy + energyRecoverRate, 100.0f);
+    }
     processPressedKeys();  // Process the pressed keys and calculate orientation change
 
     velocity.limit(maxSpeed); // Limit the velocity to the maximum speed
@@ -89,19 +107,19 @@ void Player::addPressedKey(int key) {
 }
 
 void Player::processPressedKeys() {
+    maxSpeed = isSprinting ? sprintSpeed : normalSpeed;
+    
     if(keyMap['w']) movement('w');
     if(keyMap['s']) movement('s');
     if(keyMap['d']) movement('d');
     if(keyMap['a']) movement('a');
 
     if(keyMap[' ']) shoot();
-
             
     if (!isMoving) {
-        // Apply damping to gradually slow down the ship when no keys are being pressed
         velocity *= damping; 
     }
-}      
+}     
 
 void Player::removePressedKey(int key) {
     key = tolower(key);
@@ -132,3 +150,25 @@ void Player::movement(char keyPressed) {
         shipOrientation += rotationSpeed;
         }
     }   
+void Player::loseLife() {
+    SoundManager::playSong("shipDestroyed", false);
+    lives--;
+    if(lives > 0) {
+        health = 100;
+        pos.x = ofGetWidth()/2;
+        pos.y = ofGetHeight()/2;
+    }
+}
+void Player::reset() {
+    health = 100;
+    lives = 3;
+    score = 0;
+    pos.x = ofGetWidth()/2;
+    pos.y = ofGetHeight()/2;
+    velocity.set(0, 0);
+    bullets.clear();
+}
+void Player::setSprinting(bool sprinting) {
+    isSprinting = sprinting;
+    maxSpeed = isSprinting ? sprintSpeed : normalSpeed;
+}

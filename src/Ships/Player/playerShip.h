@@ -9,6 +9,14 @@ using namespace std;
 class Player{ 
 
     private:
+        int lives;
+        float normalSpeed;
+        float sprintSpeed;
+        bool isSprinting;
+        float sprintEnergy = 100.0f;
+        float energyDrainRate = 0.5f;
+        float energyRecoverRate = 0.1f;
+
         ofImage shipSprite;                 // Sprite for the ship   
 
         int score;                          // Score of the player
@@ -32,7 +40,12 @@ class Player{
     public: 
 
        // === Public attributes ===
-        int health;                         // Needed in public for ease of use and direct access
+        int health;         
+        int getLives() const { return lives;}
+        void loseLife();
+        void setSprinting(bool sprinting);
+        
+        void resetlives();
         int shipOrientation;                // Orientation of the ship
         unordered_map<int, bool> keyMap;    // A Map is used to handle the keys pressed
         vector<Projectiles> bullets;        // List of bullets
@@ -43,7 +56,7 @@ class Player{
     // === Constructors ===
         Player();                                      // Default Constructor
         Player(int Xposition, int Yposition);         // Parametrized Constructor for the playerShip
-    
+        void reset();
         int getScore(); 
         void setScore(int score); 
   

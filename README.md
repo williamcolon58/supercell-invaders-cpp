@@ -17,8 +17,8 @@ Don't forget that you must also fill out an evaluation form in Moodle to conside
 
 ## Grading
 
-Partner 1: (STUDENT NUMBER HERE) (STUDENT NAME HERE) (STUDENT EMAIL HERE)
-Partner 2: (STUDENT NUMBER HERE) (STUDENT NAME HERE) (STUDENT EMAIL HERE)
+Partner 1: 802-22-0109 William Y. Colón Rodríguez william.colon15@upr.edu
+Partner 2: 802-22-1316 Luis A. Muñiz Cruz Luis.muniz37@upr.edu
 
 Any project that doesn't compile will receive a 0.
 

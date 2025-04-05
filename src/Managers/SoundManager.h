@@ -1,5 +1,8 @@
 #pragma once
 #include "ofMain.h"
+#include <unordered_map>
+#include <string>
+using namespace std;
 
 
 class SoundManager {

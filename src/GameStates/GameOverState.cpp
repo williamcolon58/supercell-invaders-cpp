@@ -14,7 +14,7 @@ GameOverState::GameOverState(){
 void GameOverState::update() {
     if(buttons[0]->wasPressed()){           // This is the "Play" button
         SoundManager::stopSong("intro");
-        this->setNextState("IntroState");
+        this->setNextState("BattleState");
         this->setFinished(true);
     }
 

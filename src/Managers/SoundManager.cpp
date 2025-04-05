@@ -1,4 +1,5 @@
 #include "SoundManager.h"
+using namespace std;
 
 // Definition of the static member variable
 std::unordered_map<std::string, ofSoundPlayer> SoundManager::sounds;
