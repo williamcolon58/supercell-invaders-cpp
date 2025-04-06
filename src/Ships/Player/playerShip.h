@@ -13,9 +13,7 @@ class Player{
         float normalSpeed;
         float sprintSpeed;
         bool isSprinting;
-        float sprintEnergy = 100.0f;
-        float energyDrainRate = 0.5f;
-        float energyRecoverRate = 0.1f;
+       
 
         ofImage shipSprite;                 // Sprite for the ship   
 

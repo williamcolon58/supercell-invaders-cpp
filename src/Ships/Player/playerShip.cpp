@@ -40,7 +40,6 @@ void Player::draw() {
                 ofSetColor(ofColor::yellow, 100); 
                 ofDrawCircle(0, 0, 30); 
                 ofSetColor(ofColor::blue);
-                ofDrawRectangle(pos.x - 20, pos.y - 40, 40 * (sprintEnergy / 100.0f), 5);
                 ofSetColor(ofColor::white); 
             }
 
@@ -53,12 +52,7 @@ void Player::draw() {
 }
 
 void Player::update() {
-    if (isSprinting) {
-        sprintEnergy = max(sprintEnergy - energyDrainRate, 0.0f);
-        if (sprintEnergy <= 0) setSprinting(false); 
-    } else {
-        sprintEnergy = min(sprintEnergy + energyRecoverRate, 100.0f);
-    }
+
     processPressedKeys();  // Process the pressed keys and calculate orientation change
 
     velocity.limit(maxSpeed); // Limit the velocity to the maximum speed
@@ -100,10 +94,11 @@ void Player::removeMarkedBullets(){
 }
 
 void Player::addPressedKey(int key) {
+    if (key == OF_KEY_LEFT_SHIFT || key == OF_KEY_RIGHT_SHIFT) return;
+    
     key = tolower(key);
-
     keyMap[key] = true;
-    isMoving = true; // Set the movement flag
+    isMoving = true;
 }
 
 void Player::processPressedKeys() {

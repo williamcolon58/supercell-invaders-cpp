@@ -124,26 +124,31 @@ void ShipBattle::draw() {
 // ====================================
 
 void ShipBattle::keyPressed(int key) {
+    if (key == OF_KEY_LEFT_SHIFT || key == OF_KEY_RIGHT_SHIFT) {
+        player->setSprinting(true);
+        return; 
+    }
+    
     player->addPressedKey(key);
     
-    //DEBUG KEYS - Press these keys to ease the debugging with the game
+    
     if(key == 'k') {
         EnemyManager::toggleHitBoxes = !EnemyManager::toggleHitBoxes; 
         player->showHitbox = !player->showHitbox;
     }
     if(key == 'o')  player->health = 100;
     if(key == 'p')  playerScore += 10000;
-    if(key == OF_KEY_SHIFT){
-        player->setSprinting(true);
-    } 
 }
 
 void ShipBattle::keyReleased(int key) {
+   
+    if (key == OF_KEY_LEFT_SHIFT || key == OF_KEY_RIGHT_SHIFT) {
+        player->setSprinting(false);
+        return; 
+    }
+    
     key = tolower(key);
     this->player->removePressedKey(key);
-    if(key == OF_KEY_SHIFT){
-        player->setSprinting(false);
-    }
 }
 
 void ShipBattle::mousePressed(int x, int y, int button) {
