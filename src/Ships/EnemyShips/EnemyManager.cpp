@@ -1,4 +1,8 @@
 #include "EnemyManager.h"
+#include "PotentialEnemy.h"
+#include "CassandraVexBoss.h"
+#include "SoundManager.h"
+using namespace std;
 
 // Define static members here
 
@@ -9,7 +13,7 @@
 
     bool EnemyManager::ufoSeen = false;
     bool EnemyManager::ortSeen = false;
-
+    bool EnemyManager::cassandraVexEncountered = false;
     string EnemyManager::whichBoss = "";
     int EnemyManager::bossWarningTimer = 0;
 
@@ -62,7 +66,16 @@ void EnemyManager::updateEnemies(Player* player){
 
 
 void EnemyManager::manageCollisions(Player* player) {
-
+    for (auto& enemy : enemyList) {
+        if(player->hitBox.isCollidingWith(*enemy->getHitBox())) {
+            player->health = max(player->health - 0.4f, 0.0f);
+        }
+    }
+    for (auto& boss : bossList) {
+        if(player->hitBox.isCollidingWith(*boss->getHitBox())) {
+            player->health = max(player->health - 0.8f, 0.0f);
+        }
+    }
   // Handle collisions between player bullets and enemies
     for (auto& enemy : enemyList) {
             enemy->showHitboxes = toggleHitBoxes;
@@ -216,7 +229,6 @@ void EnemyManager::drawEnemies() {
         drawEnemyBullets(*boss);
     }
 }
-
 void EnemyManager::drawEnemyBullets(EnemyShip& enemy) {
     for (Projectiles& bullet : enemy.getBullets()) {
         bullet.draw();
@@ -233,30 +245,39 @@ void EnemyManager::spawnEnemy(Player* player){
 
         // Check if it's time to spawn a boss
         if (!bossIsActive) { // Ensure no boss is currently active before spawning another
-            if (currentScore > 50000 && !ortSeen) {
+            if (currentScore > 75000 && !ortSeen) {
                 // Spawn ORT Xibalba
                 initiateBossSpawn("ORT Xibalba");
                 ortSeen = true; // Prevent multiple spawns
             }
-            else if (currentScore > 10000 && !ufoSeen) {
+            else if (currentScore > 50000 && !ufoSeen) {
                 // Spawn UFO ORT
                 initiateBossSpawn("Galactica Supercell ORT");
                 ufoSeen = true; // Prevent multiple spawns
             }
+            else if(currentScore > 10000 && !cassandraVexEncountered){
+                initiateBossSpawn("Cassandra Vex");
+                cassandraVexEncountered = true;
+            }
         }
 
+
+    
+
         // Spawn regular enemies if no boss is being spawned
-        if (currentScore > 1500) {
-            enemyList.push_back(make_unique<EnemyVanguard>(spawnLocation.x, spawnLocation.y));
+        if (currentScore > 5000) {
+            enemyList.push_back(make_unique<PotentialEnemy>(spawnLocation.x, spawnLocation.y));
         } 
-        else {
+        else if(currentScore > 1500){
+            enemyList.push_back(make_unique<EnemyVanguard>(spawnLocation.x, spawnLocation.y));
+        }
+        else{
             enemyList.push_back(make_unique<EnemyCruiser>(spawnLocation.x, spawnLocation.y));
         }
 
         enemySpawnTimer = 0; // Reset timer after spawning
     }
-    
-    }
+ }
 
 bool EnemyManager::isBossSpawning() {
     return bossIsSpawning && bossWarningTimer > 0;
@@ -282,18 +303,26 @@ void EnemyManager::initiateBossSpawn(string bossType) {
 
 
 void EnemyManager::spawnBoss(const string& bossType) {
-    // Based on bossType, spawn the actual boss
+    ofLogNotice("BOSS") << "Spawning: " << bossType; 
+
     if (bossType == "ORT Xibalba") {
-        ortSeen = true;   
-        auto boss = make_unique<ORT>(0, ofGetHeight()/2 -50, "ORT Xibalba");
+        ortSeen = true;
+        float x = ofGetWidth() * 0.25f;
+        float y = ofGetHeight() * 0.5f;
+        auto boss = make_unique<ORT>(x, y, "ORT Xibalba");
         bossList.push_back(move(boss));
     } 
     else if (bossType == "Galactica Supercell ORT") {
         ufoSeen = true;
-        auto boss = make_unique<UFO>(ofGetWidth()/2, 20, "Galactica Supercell ORT");
+        auto boss = make_unique<UFO>(ofGetWidth() / 2, 20, "Galactica Supercell ORT");
         bossList.push_back(move(boss));
     }
-    // Reset the spawn timer and clear boss spawning flags
+    else if(bossType == "Cassandra Vex"){
+        cassandraVexEncountered = true;
+        auto boss = make_unique<CassandraVexBoss>(ofGetWidth() / 2, ofGetHeight() / 2, "Cassandra Vex");
+        bossList.push_back(move(boss));
+    }
+
     enemySpawnTimer = 0;
     bossIsSpawning = false;
 }
@@ -309,6 +338,7 @@ int EnemyManager::whichSpawnInterval(int playerScore) {
     // Simplified example, adjust intervals as needed
     if (!bossIsActive && ortSeen) return 5;
     if (!bossIsActive && ufoSeen) return 10;
+    if (!bossIsActive && cassandraVexEncountered) return 15;
     if (bossIsActive) return 150; // Slower spawn rate if a boss is active
     if (playerScore < 1000) return 60; // Fast spawn rate for low scores
     if (playerScore < 5000) return 80; // Slower spawn as difficulty increases
@@ -322,6 +352,7 @@ void EnemyManager::cleanUp() {
     bossList.clear();
     ufoSeen = false;
     ortSeen = false;
+    cassandraVexEncountered = false;
     bossHasDied();
     pointsPerUpdateCycle = 0;
     killSpreeTimer = 0;

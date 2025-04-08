@@ -24,19 +24,22 @@ ORT::ORT(int xpos, int ypos, string name) : Boss(xpos, ypos,0.5, 750, name) {
     
 void ORT::update(const ofPoint& playerPos) {
     // pos.x += speed;
-    enemyHitBox->box.setPosition(pos.x + 10, pos.y - 30);   // Update the hitbox to follow the boss
+    enemyHitBox->box.setPosition(
+        pos.x - enemyShipSprite.getWidth() * 0.025,  
+        pos.y - enemyShipSprite.getHeight() * 0.0375 
+    );   
     shootingPoint = ofPoint(pos.x + enemyHitBox->box.getWidth(), pos.y + enemyHitBox->box.getHeight() / 2);   // Update the shooting point
 
 
     // Update the switch position
-    switchPosTimer++;
-    if (switchPosTimer % 100 == 0) {
-        switchPosIndex++;
-        pos = possiblePositions[switchPosIndex % possiblePositions.size()];
-    }
+    // switchPosTimer++;
+    // if (switchPosTimer % 100 == 0) {
+    //     switchPosIndex++;
+    //     pos = possiblePositions[switchPosIndex % possiblePositions.size()];
+    // }
 
 
-
+    pos.set(ofGetWidth() / 2, ofGetHeight() / 2);
 
     // Check if ORT is out of the screen, reset position if necessary
     // if (pos.x > ofGetWidth()) {
@@ -60,20 +63,23 @@ void ORT::update(const ofPoint& playerPos) {
 
 }
 
+
 void ORT::draw() {
     ofPushMatrix();
     ofTranslate(pos.x, pos.y);
     // ofRotateDeg(shipOrientation);
-    enemyShipSprite.draw(-32, -32, 200, 200);
+    enemyShipSprite.draw(
+        -enemyShipSprite.getWidth() / 2,  
+        -enemyShipSprite.getHeight() / 2     
+    );
     ofPopMatrix();
     
     // Uncomment this if you want to see the hitbox for the enemy
-    if(showHitboxes){
-        enemyHitBox->draw();
-    }
-    
+    if(showHitboxes) enemyHitBox->draw();
     showBossHealth();
 }
+    
+
 
 
 void ORT::shoot() {

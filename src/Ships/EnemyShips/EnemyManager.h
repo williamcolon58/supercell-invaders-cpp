@@ -1,15 +1,19 @@
 #pragma once 
 
+#include "ofMain.h"
+#include <vector>
+#include <memory>
+#include <string>
 #include "playerShip.h"
 
 // Section for enemy types
 #include "EnemyCruiser.h"
 #include "EnemyVanguard.h"
-
+#include "PotentialEnemy.h"
 // Section for Bosses
 #include "ORT.h"
 #include "UFO.h"
-
+#include "CassandraVexBoss.h"
 class EnemyManager {
     //==================== Utility Functions and Variables ====================
     public:
@@ -46,7 +50,7 @@ class EnemyManager {
         static bool bossIsActive;
         static bool ufoSeen;
         static bool ortSeen;
-
+        static bool cassandraVexEncountered;
 
     public:
         // Boss Management

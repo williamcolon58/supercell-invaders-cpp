@@ -31,4 +31,9 @@ class HitBox {
         bool isHit(Projectiles& bullet){
             return box.inside(bullet.position.x, bullet.position.y);          
         }
+        bool isCollidingWith(const HitBox& other, float padding = 3.0f) const {
+            ofRectangle expanded = box;
+            expanded.scaleFromCenter(1.0f + padding/box.width, 1.0f + padding/box.height);
+            return expanded.intersects(other.box);
+        }
 };

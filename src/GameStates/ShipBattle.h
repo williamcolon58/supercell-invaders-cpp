@@ -1,9 +1,11 @@
 // Includes and dependencies
 #include "State.h"
-#include "EnemyManager.h"
+// #include "EnemyManager.h"
+// #include "PotentialEnemy"
 #include "enemy.h"
 #include "EnemyCruiser.h"
 #include "EnemyVanguard.h"
+#include "CassandraVexBoss.h"
 #include "ORT.h"
 #include "UFO.h"
 #include "playerShip.h"
