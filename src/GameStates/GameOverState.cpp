@@ -1,4 +1,5 @@
 #include "GameOverState.h"
+#include "EnemyManager.h"
 //Use maps instead of a vector
 GameOverState::GameOverState(){
     titleImage.load("Menu_Images/introWallpaper.jpg");
@@ -14,6 +15,7 @@ GameOverState::GameOverState(){
 void GameOverState::update() {
     if(buttons[0]->wasPressed()){           // This is the "Play" button
         SoundManager::stopSong("intro");
+        SoundManager::stopSong(EnemyManager::getCurrentBossSong());
         this->setNextState("BattleState");
         this->setFinished(true);
     }

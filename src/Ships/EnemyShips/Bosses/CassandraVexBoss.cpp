@@ -1,9 +1,8 @@
 #include "CassandraVexBoss.h"
-#include "SoundManager.h"
 
 CassandraVexBoss::CassandraVexBoss(int xpos, int ypos, string name) : 
     Boss(xpos, ypos, 0.0f, 600, name) {
-    enemyShipSprite.load("CompressedImages/SpaceStation-min.png");
+    enemyShipSprite.load("ShipModels/Space_Station.png");
     enemyHitBox = new HitBox(pos.x - 60, pos.y - 60, 120, 120);
 }
 
@@ -12,7 +11,7 @@ void CassandraVexBoss::update(const ofPoint& playerPos) {
     pos.y = ofGetHeight() / 2;
     enemyHitBox->box.setPosition(pos.x - 60, pos.y - 60);
 
-    if (shotTimer++ % 30 == 0) {
+    if (shotTimer++ % 10 == 0) {
         shoot();
     }
 }
@@ -29,13 +28,14 @@ void CassandraVexBoss::draw() {
 }
 
 void CassandraVexBoss::shoot() {
-    for (int i = 0; i < projectilesPerWave; ++i) {
-        float angle = i * (360.0f / projectilesPerWave) + vortexAngle;
+    
+        float angle = vortexAngle;
+        if (angle >= 360.0f) angle -=360.0f;
         Projectiles vortexProjectile(pos, angle);
-        vortexProjectile.setSpeed(4);
+        vortexProjectile.setSpeed(5);
         vortexProjectile.setColors(ofColor::cyan, ofColor::blue);
         enemyBullets.push_back(vortexProjectile);
-    }
+    
 
     vortexAngle += vortexSpeed;
     if(vortexAngle >= 360.0f) vortexAngle -= 360.0f;

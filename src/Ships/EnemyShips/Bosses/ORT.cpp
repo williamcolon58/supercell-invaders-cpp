@@ -1,7 +1,7 @@
 #include "ORT.h"
 
 ORT::ORT(int xpos, int ypos, string name) : Boss(xpos, ypos,0.5, 750, name) {
-    enemyShipSprite.load("CompressedImages/ORT_Xibalba-min.png");
+    enemyShipSprite.load("ShipModels/newORT_Xibalba.png");
     enemyHitBox = new HitBox(pos.x, pos.y - 30, enemyShipSprite.getWidth() * 0.05, enemyShipSprite.getHeight() * 0.075);
     
     shootingPoint = ofPoint(pos.x + enemyHitBox->box.getWidth(), pos.y + enemyHitBox->box.getHeight() / 2);
@@ -32,14 +32,14 @@ void ORT::update(const ofPoint& playerPos) {
 
 
     // Update the switch position
-    // switchPosTimer++;
-    // if (switchPosTimer % 100 == 0) {
-    //     switchPosIndex++;
-    //     pos = possiblePositions[switchPosIndex % possiblePositions.size()];
-    // }
+    switchPosTimer++;
+     if (switchPosTimer % 100 == 0) {
+         switchPosIndex++;
+         pos = possiblePositions[switchPosIndex % possiblePositions.size()];
+     }
 
 
-    pos.set(ofGetWidth() / 2, ofGetHeight() / 2);
+   // pos.set(ofGetWidth() / 2, ofGetHeight() / 2);
 
     // Check if ORT is out of the screen, reset position if necessary
     // if (pos.x > ofGetWidth()) {
@@ -47,7 +47,7 @@ void ORT::update(const ofPoint& playerPos) {
     // }
 
     // Shoot bullets in a semi-circular motion
-    if (shotTimer % 50  == 0) { // Adjust the value for the frequency of shooting
+    if (shotTimer % 100  == 1) { // Adjust the value for the frequency of shooting
         shoot();
     }
 
@@ -75,7 +75,10 @@ void ORT::draw() {
     ofPopMatrix();
     
     // Uncomment this if you want to see the hitbox for the enemy
-    if(showHitboxes) enemyHitBox->draw();
+    if(showHitboxes) 
+    { 
+        enemyHitBox->draw();
+    }
     showBossHealth();
 }
     

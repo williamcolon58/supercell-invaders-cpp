@@ -78,6 +78,8 @@ class EnemyManager {
         static void drawEnemies(); // Draws enemies on the screen
         static void drawEnemyBullets(EnemyShip& enemy); // Draws bullets for each enemy
 
+
+        static string getCurrentBossSong();
     //==================== Helper Functions ====================
         static void decrementKillSpreeTimer();
         static int getKillSpreeTimer();

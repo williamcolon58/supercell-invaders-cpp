@@ -296,6 +296,7 @@ string EnemyManager::getSpawningBossType() {
 void EnemyManager::initiateBossSpawn(string bossType) {
     bossIsActive = true;
     bossIsSpawning = true;
+    SoundManager::stopSong(whichBoss);
     whichBoss = bossType;
     SoundManager::playSong(bossType, true);
     resetBossWarningTimer(200); // Set to desired warning duration in frames per second (60fps = 1sec)
@@ -369,3 +370,7 @@ void EnemyManager::removeEnemies() {
         bossList.end());
 }
 
+string EnemyManager::getCurrentBossSong()
+{
+    return whichBoss;
+}
