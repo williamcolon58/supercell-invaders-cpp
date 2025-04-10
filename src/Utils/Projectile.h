@@ -29,7 +29,8 @@ class Projectiles {
         Projectiles(ofPoint p, float angle, int dmg);   // Overloaded constructor to also set damage
 
         // Getter and Setter Methods
-        int getDamage() { return damage; }              // Returns the damage of the projectile
+        int getDamage() const { return damage; }        // Returns the damage of the projectile
+        void setDamage(int newDamage) { damage = newDamage; }      // Sets the damage of th
         void setSpeed(int s) { speed = s; }             // Sets the speed of the projectile
         void setColors(ofColor c1, ofColor c2);         // Sets the colors of the projectile
 

@@ -1,6 +1,8 @@
 #include "ShipBattle.h"
 #include "EnemyManager.h"
-
+#include "Boss.h"
+#include "playerShip.h"
+using namespace std;
 // ====================================
 // Constructor & Destructor Section
 // ====================================
@@ -22,6 +24,12 @@ ShipBattle::ShipBattle() {
 
 // Update Method
 void ShipBattle::update() {
+    if (EnemyManager::getEnemiesKilledThisFrame() > 0) {
+        player->increaseShieldEnergy(5.0f * EnemyManager::getEnemiesKilledThisFrame());
+    }
+    player->updateShield(ofGetLastFrameTime());
+    
+
     // Boss spawn logic
     if (EnemyManager::isBossSpawning()) {
         displayBossWarning = true;
@@ -72,9 +80,15 @@ void ShipBattle::update() {
             ofSetColor(ofColor::red);
             font.drawString("LIFE LOST!" , player->pos.x - 30, player->pos.y - 40);
             SoundManager::playSong("button", false);
+            if (EnemyManager::getEnemiesKilledThisFrame() > 0) {
+                player->increaseShieldEnergy(5.0f * EnemyManager::getEnemiesKilledThisFrame()); 
+            }
+            
+            player->updateShield(ofGetLastFrameTime());
         }
     }
 }
+
 
 //====== Draw Method ====== 
 void ShipBattle::draw() {
@@ -116,7 +130,17 @@ void ShipBattle::draw() {
         ofNoFill();
         ofDrawRectangle(ofGetWidth() - 150, 30, 50, 50);
         ofFill();
+        if (player->getBombs() > 0) {
+            ofSetColor(ofColor::red);
+            ofDrawCircle(ofGetWidth() - 125, 55, 15); 
+            ofSetColor(ofColor::white);
+            font.drawString(ofToString(player->getBombs()), ofGetWidth() - 130, 60);
+        }
+        shieldEnergyBar(player->getShieldEnergy(), player->SHIELD_MAX_ENERGY); 
+
 }
+
+
 
 
 // ====================================
@@ -138,7 +162,17 @@ void ShipBattle::keyPressed(int key) {
     }
     if(key == 'o')  player->health = 100;
     if(key == 'p')  playerScore += 10000;
+    if (key == 'q' || key == 'Q') {
+        player->activateShield();
+    }
+    if (key == 'e' || key == 'E') {
+        if (player->useBomb()) {
+            EnemyManager::destroyAllRegularEnemies();
+            SoundManager::playSong("shipDestroyed", false);
+        }
+    }
 }
+
 
 void ShipBattle::keyReleased(int key) {
    
@@ -239,6 +273,16 @@ void ShipBattle::reset(){
 
     setFinished(false);
     setNextState("");
+}
+void ShipBattle::shieldEnergyBar(float currEnergy, float maxEnergy) {
+    int barX = ofGetWidth() - 300;
+    int barY = 90;
+    indicatorFont.drawString("SHIELD", barX - 60, barY + 15);
+    ofNoFill();
+    ofDrawRectangle(barX, barY, 200 * (currEnergy/100.0f), 20);    ofFill();
+    ofSetColor(ofColor::cyan);
+    ofDrawRectangle(barX, barY, 200 * (currEnergy/Player::SHIELD_MAX_ENERGY), 20);
+    ofSetColor(ofColor::white);
 }
 
 

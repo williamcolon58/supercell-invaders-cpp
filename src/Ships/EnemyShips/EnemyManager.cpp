@@ -2,6 +2,7 @@
 #include "PotentialEnemy.h"
 #include "CassandraVexBoss.h"
 #include "SoundManager.h"
+#include "Boss.h"
 using namespace std;
 
 // Define static members here
@@ -60,9 +61,9 @@ void EnemyManager::updateEnemies(Player* player){
 
     // Remove enemies that have been marked for deletion
     removeEnemies();
-
-
 }
+
+
 
 
 void EnemyManager::manageCollisions(Player* player) {
@@ -89,11 +90,13 @@ void EnemyManager::manageCollisions(Player* player) {
                     SoundManager::playSong("shipDestroyed", false);
                     pointsPerUpdateCycle += enemy->getPoints();
                     resetKillSpreeTimer(150);
+                    player->increaseShieldEnergy(20.0f);
                 }
                 bullet.markForDeletion(); // Mark bullet for deletion
             }
         }
     }
+
 
     enemyList.erase(remove_if(enemyList.begin(), enemyList.end(), [](const unique_ptr<EnemyShip>& enemy){ return !enemy; }), enemyList.end());
 
@@ -120,12 +123,16 @@ void EnemyManager::manageCollisions(Player* player) {
                 Boss->takeDamage(bullet.getDamage());
                 
                 if (Boss->isDead()) {                   //If the boss has died from a bullet
+                    player->addBomb();
+                    player->upgradeWeapons();
+                    player->upgradeShip();
                     SoundManager::stopSong(whichBoss);
                     SoundManager::playSong("battle", false);
                     bossHasDied();
                     SoundManager::playSong("shipDestroyed", false);
                     pointsPerUpdateCycle += Boss->getPoints();
                     resetKillSpreeTimer(150);
+                    player->increaseShieldEnergy(100.0f);
                 }
 
                 bullet.markForDeletion(); // Mark bullet for deletion
@@ -149,8 +156,7 @@ void EnemyManager::manageCollisions(Player* player) {
     for (auto& enemy : enemyList) {
         enemy->removeMarkedBullets();
     }
-
-}
+};
 
 
 
@@ -368,6 +374,14 @@ void EnemyManager::removeEnemies() {
     bossList.erase(remove_if(bossList.begin(), bossList.end(),
         [](const unique_ptr<Boss>& boss) { return boss->isDead(); }),
         bossList.end());
+}
+void EnemyManager::destroyAllRegularEnemies() {
+    for (auto& enemy : enemyList) {
+        enemy->takeDamage(1000); 
+    }
+    if (!bossList.empty()) {
+        bossList[0]->takeDamage(bossList[0]->getHealth() * 0.25f);
+    }
 }
 
 string EnemyManager::getCurrentBossSong()

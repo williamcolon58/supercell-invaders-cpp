@@ -13,7 +13,13 @@ class Player{
         float normalSpeed;
         float sprintSpeed;
         bool isSprinting;
-       
+        bool shieldActive;
+        float shieldEnergy;
+        int bombs;
+        bool weaponsUpgraded;
+        bool shipUpgraded;
+        ofImage secondShipSprite;
+        ofImage shieldSprite;
 
         ofImage shipSprite;                 // Sprite for the ship   
 
@@ -40,8 +46,21 @@ class Player{
        // === Public attributes ===
         int health;         
         int getLives() const { return lives;}
+        static const float SHIELD_MAX_ENERGY;
         void loseLife();
         void setSprinting(bool sprinting);
+        void activateShield();
+        void updateShield(float deltaTime);
+        void increaseShieldEnergy(float amount);
+        void addBomb();
+        bool useBomb(); 
+        int getBombs() const;
+        bool isShieldActive() const;
+        float getShieldEnergy() const;
+        void upgradeWeapons();
+        void upgradeShip();
+        bool hasUpgradedWeapons() const;
+        bool hasUpgradedShip() const;
         
         void resetlives();
         int shipOrientation;                // Orientation of the ship

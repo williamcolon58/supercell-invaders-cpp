@@ -1,4 +1,5 @@
 #include "playerShip.h"
+const float Player::SHIELD_MAX_ENERGY = 100.0f;
 
 
 //Parametrized Constructor for the playerShip
@@ -21,7 +22,13 @@ Player::Player(int Xposition, int Yposition){
     sprintSpeed = 10.0f;
     isSprinting = false;
     maxSpeed = normalSpeed;
-
+    shieldActive = false;
+    shieldEnergy = 0.0f;
+    bombs = 0;
+    weaponsUpgraded = false;
+    shipUpgraded = false;
+    this->secondShipSprite.load("ShipModels/secondShip.png");
+    this->shieldSprite.load("ShipModels/ForceShield.png");
 }
 
 Player::Player(){
@@ -43,8 +50,16 @@ void Player::draw() {
                 ofSetColor(ofColor::white); 
             }
 
+            if(shipUpgraded){
+                this->secondShipSprite.draw(-20, -20, 45, 45);
+            }else{
             this->shipSprite.draw(-20, -20, 45, 45);
-
+            }
+            if (shieldActive) {
+                ofSetColor(255, 255, 255, 180);
+                this->shieldSprite.draw(-35, -35, 70, 70);
+                ofSetColor(ofColor::white);
+            }
             ofPopMatrix();
                 
         // Draw the hitbox around the player ship. Uncomment this line for testing purposes
@@ -54,6 +69,8 @@ void Player::draw() {
 void Player::update() {
 
     processPressedKeys();  // Process the pressed keys and calculate orientation change
+    increaseShieldEnergy(5.0f * ofGetLastFrameTime());
+    updateShield(ofGetLastFrameTime());
 
     velocity.limit(maxSpeed); // Limit the velocity to the maximum speed
             
@@ -63,7 +80,7 @@ void Player::update() {
     velocity *= damping; // Apply damping to slow down the ship
 
     draw();  // Draw the ship
-
+   
 }
 
 void Player::shoot() { 
@@ -71,18 +88,21 @@ void Player::shoot() {
     float currentTime = ofGetElapsedTimef();
 
     // Check if enough time has passed since the last shot
-        if (currentTime - lastShotTime >= shotCooldown) {
-
-                Projectiles p = Projectiles(ofPoint(this->pos.x, this->pos.y), this->shipOrientation);
-                p.setColors(ofColor::azure, ofColor::blueViolet);
-                this->bullets.push_back(p);
-
-            // SoundManager::playSong("bulletSound", false);
-            SoundManager::playSong("Beam", false);
-
-            // Update the last shot time to the current time
-            lastShotTime = currentTime;
+ 
+    if (currentTime - lastShotTime >= shotCooldown) {
+        Projectiles p = Projectiles(ofPoint(this->pos.x, this->pos.y), this->shipOrientation);
+        
+        if (weaponsUpgraded) {
+            p.setColors(ofColor::orangeRed, ofColor::gold);
+            p.setDamage(p.getDamage() * 2); 
+        } else {
+            p.setColors(ofColor::azure, ofColor::blueViolet);
         }
+        
+        this->bullets.push_back(p);
+        SoundManager::playSong("Beam", false);
+        lastShotTime = currentTime;
+    }
 }
 
 void Player::setShotCooldown(float shotCooldown) { this->shotCooldown = shotCooldown; }
@@ -99,6 +119,7 @@ void Player::addPressedKey(int key) {
     key = tolower(key);
     keyMap[key] = true;
     isMoving = true;
+  
 }
 
 void Player::processPressedKeys() {
@@ -110,7 +131,8 @@ void Player::processPressedKeys() {
     if(keyMap['a']) movement('a');
 
     if(keyMap[' ']) shoot();
-            
+   
+
     if (!isMoving) {
         velocity *= damping; 
     }
@@ -166,4 +188,71 @@ void Player::reset() {
 void Player::setSprinting(bool sprinting) {
     isSprinting = sprinting;
     maxSpeed = isSprinting ? sprintSpeed : normalSpeed;
+}
+void Player::activateShield() {
+    if (shieldEnergy >= SHIELD_MAX_ENERGY) {
+        shieldActive = true;
+        SoundManager::playSong("Beam", false);
+    }
+}
+void Player::updateShield(float deltaTime) {
+    if (shieldActive) {
+        shieldEnergy -= 20.0f * deltaTime;
+        if (shieldEnergy <= 0) {
+            shieldActive = false;
+            shieldEnergy = 0;
+        }
+    }
+}
+void Player::increaseShieldEnergy(float amount) {
+    if (!shieldActive && shieldEnergy < SHIELD_MAX_ENERGY) {
+        shieldEnergy = min(shieldEnergy + amount, SHIELD_MAX_ENERGY);
+    }
+}
+
+bool Player::isShieldActive() const {
+    return shieldActive;
+}
+
+float Player::getShieldEnergy() const {
+    return shieldEnergy;
+}
+
+void Player::addBomb() {
+    bombs = min(bombs + 1, 3);
+    SoundManager::playSong("button", false);
+}
+
+bool Player::useBomb() {
+    if (bombs > 0) {
+        bombs--;
+        SoundManager::playSong("shipDestroyed", false);
+        return true;
+    }
+    return false;
+}
+
+int Player::getBombs() const {
+    return bombs;
+}
+
+void Player::upgradeWeapons() {
+    weaponsUpgraded = true;
+    shotCooldown *= 0.7f;
+    SoundManager::playSong("button", false);
+}
+
+void Player::upgradeShip() {
+    shipUpgraded = true;
+    normalSpeed *= 1.2f;
+    sprintSpeed *= 1.2f;
+    SoundManager::playSong("button", false);
+}
+
+bool Player::hasUpgradedWeapons() const {
+    return weaponsUpgraded;
+}
+
+bool Player::hasUpgradedShip() const {
+    return shipUpgraded;
 }

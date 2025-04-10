@@ -1,7 +1,7 @@
 // Includes and dependencies
 #include "State.h"
-// #include "EnemyManager.h"
-// #include "PotentialEnemy"
+#include "ofTrueTypeFont.h"
+#include "EnemyManager.h"
 #include "enemy.h"
 #include "EnemyCruiser.h"
 #include "EnemyVanguard.h"
@@ -64,6 +64,7 @@ public:
     // UI and feedback methods
     void healthBar(int currHealth, int maxHealth);          // Render the health bar
     void killSpreeTimer(int currTimer, int maxTimer);       // Render the kill spree timer
+    void shieldEnergyBar(float currEnergy, float maxEnergy);
     double killSpreeMode();                                 // Logic for kill spree mode
     double scoreMultiplier();                               // Calculate score multiplier based on game state
     void removeMarkedPlayerBullets();                       // Remove bullets marked for deletion

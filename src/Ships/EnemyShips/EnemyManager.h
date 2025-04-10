@@ -80,6 +80,11 @@ class EnemyManager {
 
 
         static string getCurrentBossSong();
+        static int getEnemiesKilledThisFrame() {
+            return pointsPerUpdateCycle / 30; 
+        }
+        static void destroyAllRegularEnemies();
+    
     //==================== Helper Functions ====================
         static void decrementKillSpreeTimer();
         static int getKillSpreeTimer();

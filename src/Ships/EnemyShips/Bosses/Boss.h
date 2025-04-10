@@ -42,6 +42,7 @@ class Boss : public EnemyShip {
         ofNoFill();
         ofDrawRectangle(ofGetWidth() / 4, ofGetHeight() * 3/4, ofGetWidth() / 2, 20); // Health bar background
 
+
         // Calculate the current health as a percentage of total health
         float healthPercentage = static_cast<float>(health) / static_cast<float>(BossHealth);
 
@@ -54,5 +55,5 @@ class Boss : public EnemyShip {
         ofDrawRectangle(ofGetWidth() / 4, ofGetHeight() * 3/4, redBarWidth, 20); // Health bar filled based on current health
         ofSetColor(ofColor::white); // Reset color to white for subsequent drawing operations
     }
-
+    int getHealth() const { return health; }
 };
