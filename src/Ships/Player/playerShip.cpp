@@ -28,7 +28,8 @@ Player::Player(int Xposition, int Yposition){
     weaponsUpgraded = false;
     shipUpgraded = false;
     this->secondShipSprite.load("ShipModels/secondShip.png");
-    this->shieldSprite.load("ShipModels/ForceShield.png");
+    this->shieldSprite.load("CompressedImages/ForceShield.png");
+    this->bombImage.load("CompressedImages/Bomb-min.png");
 }
 
 Player::Player(){
@@ -70,7 +71,6 @@ void Player::update() {
 
     processPressedKeys();  // Process the pressed keys and calculate orientation change
     increaseShieldEnergy(5.0f * ofGetLastFrameTime());
-    updateShield(ofGetLastFrameTime());
 
     velocity.limit(maxSpeed); // Limit the velocity to the maximum speed
             
@@ -80,8 +80,19 @@ void Player::update() {
     velocity *= damping; // Apply damping to slow down the ship
 
     draw();  // Draw the ship
-   
+
+    if (shieldActive) {
+        shieldTimer -= ofGetLastFrameTime();  
+        if (shieldTimer <= 0)
+         {
+            shieldActive = false;  
+            shieldEnergy = 0;     
+        }
+        decreaseShieldEnergy(SHIELD_MAX_ENERGY / 10.0f * ofGetLastFrameTime());
+    }
+    updateShield(ofGetLastFrameTime());
 }
+
 
 void Player::shoot() { 
     // Calculate the current time
@@ -190,8 +201,10 @@ void Player::setSprinting(bool sprinting) {
     maxSpeed = isSprinting ? sprintSpeed : normalSpeed;
 }
 void Player::activateShield() {
-    if (shieldEnergy >= SHIELD_MAX_ENERGY) {
+    if (shieldEnergy >= SHIELD_MAX_ENERGY && !shieldActive) {
         shieldActive = true;
+        shieldEnergy = SHIELD_MAX_ENERGY;
+        shieldTimer = 10.0f;
         SoundManager::playSong("Beam", false);
     }
 }
@@ -255,4 +268,21 @@ bool Player::hasUpgradedWeapons() const {
 
 bool Player::hasUpgradedShip() const {
     return shipUpgraded;
+}
+
+void Player::takeDamage(float damage) {
+    if (!isShieldActive())
+    {
+        health = max(health-damage, 0.0f);
+    }
+}
+
+void Player::decreaseShieldEnergy(float amount){
+    if (shieldActive) {  
+        shieldEnergy -= amount;
+        if (shieldEnergy <= 0) {
+            shieldActive = false;  
+            shieldEnergy = 0;
+        }
+    }
 }

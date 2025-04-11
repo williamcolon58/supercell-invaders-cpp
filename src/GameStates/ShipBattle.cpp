@@ -131,12 +131,11 @@ void ShipBattle::draw() {
         ofDrawRectangle(ofGetWidth() - 150, 30, 50, 50);
         ofFill();
         if (player->getBombs() > 0) {
-            ofSetColor(ofColor::red);
-            ofDrawCircle(ofGetWidth() - 125, 55, 15); 
+            player->bombImage.draw(ofGetWidth() - 150, 30, 50, 50);
             ofSetColor(ofColor::white);
             font.drawString(ofToString(player->getBombs()), ofGetWidth() - 130, 60);
         }
-        shieldEnergyBar(player->getShieldEnergy(), player->SHIELD_MAX_ENERGY); 
+        shieldEnergyBar(player->getShieldEnergy(), Player::SHIELD_MAX_ENERGY); 
 
 }
 
@@ -162,9 +161,14 @@ void ShipBattle::keyPressed(int key) {
     }
     if(key == 'o')  player->health = 100;
     if(key == 'p')  playerScore += 10000;
-    if (key == 'q' || key == 'Q') {
+    if (key == 'q' || key == 'Q') 
+    {
+        if (player->getShieldEnergy() >= Player::SHIELD_MAX_ENERGY)
+         {
         player->activateShield();
-    }
+        }
+}
+
     if (key == 'e' || key == 'E') {
         if (player->useBomb()) {
             EnemyManager::destroyAllRegularEnemies();
@@ -279,9 +283,12 @@ void ShipBattle::shieldEnergyBar(float currEnergy, float maxEnergy) {
     int barY = 90;
     indicatorFont.drawString("SHIELD", barX - 60, barY + 15);
     ofNoFill();
-    ofDrawRectangle(barX, barY, 200 * (currEnergy/100.0f), 20);    ofFill();
+    ofDrawRectangle(barX, barY, 200, 20);    
+    ofFill();
     ofSetColor(ofColor::cyan);
-    ofDrawRectangle(barX, barY, 200 * (currEnergy/Player::SHIELD_MAX_ENERGY), 20);
+    static float displayedEnergy = 0.0f;
+    displayedEnergy = ofLerp(displayedEnergy, currEnergy, 0.1f);
+    ofDrawRectangle(barX, barY, 200 * (displayedEnergy / maxEnergy), 20);
     ofSetColor(ofColor::white);
 }
 

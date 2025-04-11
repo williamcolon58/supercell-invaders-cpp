@@ -69,12 +69,18 @@ void EnemyManager::updateEnemies(Player* player){
 void EnemyManager::manageCollisions(Player* player) {
     for (auto& enemy : enemyList) {
         if(player->hitBox.isCollidingWith(*enemy->getHitBox())) {
-            player->health = max(player->health - 0.4f, 0.0f);
+            if (player->isShieldActive()) {}
+            else {
+                player->takeDamage(0.4f);
+            }
         }
     }
     for (auto& boss : bossList) {
         if(player->hitBox.isCollidingWith(*boss->getHitBox())) {
-            player->health = max(player->health - 0.8f, 0.0f);
+            if (player->isShieldActive()) {}
+            else {
+                player->takeDamage(0.8f);
+            }
         }
     }
   // Handle collisions between player bullets and enemies
@@ -105,9 +111,10 @@ void EnemyManager::manageCollisions(Player* player) {
 
         for (auto& bullet : enemy->getBullets()) {
             if (!bullet.bulletIsOutOfBounds() && player->hitBox.isHit(bullet)) {
-
+                if (player->isShieldActive()) {}
+                else{
                 player->health = max(player->health - 10.0, 0.0);       // Player takes damage 
-                
+                }
                 bullet.markForDeletion(); // Mark bullet for deletion (without it you would have a memory leak (Ask Bienve what are memory leaks))
             }
         }
@@ -132,7 +139,7 @@ void EnemyManager::manageCollisions(Player* player) {
                     SoundManager::playSong("shipDestroyed", false);
                     pointsPerUpdateCycle += Boss->getPoints();
                     resetKillSpreeTimer(150);
-                    player->increaseShieldEnergy(100.0f);
+                    player->increaseShieldEnergy(5.0f);
                 }
 
                 bullet.markForDeletion(); // Mark bullet for deletion
@@ -143,8 +150,10 @@ void EnemyManager::manageCollisions(Player* player) {
     for (auto& Boss : bossList) {
         for (auto& bullet : Boss->getBullets()) {
             if (!bullet.bulletIsOutOfBounds() && player->hitBox.isHit(bullet)) {
-
-                player->health = max(player->health - 10.0, 0.0);       // Player takes damage 
+                if (player->isShieldActive()) {}
+                else {
+                player->health = max(player->health - 10.0, 0.0); 
+                }      // Player takes damage 
                 bullet.markForDeletion(); // Mark bullet for deletion
             }
         }

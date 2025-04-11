@@ -20,11 +20,10 @@ class Player{
         bool shipUpgraded;
         ofImage secondShipSprite;
         ofImage shieldSprite;
-
         ofImage shipSprite;                 // Sprite for the ship   
-
-        int score;                          // Score of the player
-
+        int score;                          // Score of the player              
+        float shieldTimer;                
+        
     // === Attributes related to movement ===
         float maxSpeed = 5;         // Maximum speed of the player
         float speed;                // Current speed of the player
@@ -61,7 +60,8 @@ class Player{
         void upgradeShip();
         bool hasUpgradedWeapons() const;
         bool hasUpgradedShip() const;
-        
+        void decreaseShieldEnergy(float amount);
+        ofImage bombImage;
         void resetlives();
         int shipOrientation;                // Orientation of the ship
         unordered_map<int, bool> keyMap;    // A Map is used to handle the keys pressed
@@ -69,7 +69,9 @@ class Player{
         ofPoint pos;                        // Position of the player
         HitBox hitBox;                      // Hitbox for the player
         bool showHitbox = false;
-
+        void takeDamage(float damage);
+        
+        
     // === Constructors ===
         Player();                                      // Default Constructor
         Player(int Xposition, int Yposition);         // Parametrized Constructor for the playerShip
