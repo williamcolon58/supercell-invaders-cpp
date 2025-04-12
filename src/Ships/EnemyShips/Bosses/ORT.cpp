@@ -2,7 +2,7 @@
 
 ORT::ORT(int xpos, int ypos, string name) : Boss(xpos, ypos,0.5, 750, name) {
     enemyShipSprite.load("ShipModels/newORT_Xibalba.png");
-    enemyHitBox = new HitBox(pos.x, pos.y - 30, enemyShipSprite.getWidth() * 0.05, enemyShipSprite.getHeight() * 0.075);
+    enemyHitBox = new HitBox(pos.x, pos.y - 30, enemyShipSprite.getWidth() * 0.4, enemyShipSprite.getHeight() * 0.5);
     
     shootingPoint = ofPoint(pos.x + enemyHitBox->box.getWidth(), pos.y + enemyHitBox->box.getHeight() / 2);
     
@@ -25,8 +25,8 @@ ORT::ORT(int xpos, int ypos, string name) : Boss(xpos, ypos,0.5, 750, name) {
 void ORT::update(const ofPoint& playerPos) {
     // pos.x += speed;
     enemyHitBox->box.setPosition(
-        pos.x - enemyShipSprite.getWidth() * 0.025,  
-        pos.y - enemyShipSprite.getHeight() * 0.0375 
+        pos.x - enemyShipSprite.getWidth() * 0.2,  
+        pos.y - enemyShipSprite.getHeight() * 0.25 
     );   
     shootingPoint = ofPoint(pos.x + enemyHitBox->box.getWidth(), pos.y + enemyHitBox->box.getHeight() / 2);   // Update the shooting point
 

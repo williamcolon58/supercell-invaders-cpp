@@ -15,6 +15,7 @@ class Player{
         bool isSprinting;
         bool shieldActive;
         float shieldEnergy;
+        static constexpr float SHIELD_DEPLETE_RATE = 0.10;
         int bombs;
         bool weaponsUpgraded;
         bool shipUpgraded;
@@ -22,7 +23,6 @@ class Player{
         ofImage shieldSprite;
         ofImage shipSprite;                 // Sprite for the ship   
         int score;                          // Score of the player              
-        float shieldTimer;                
         
     // === Attributes related to movement ===
         float maxSpeed = 5;         // Maximum speed of the player

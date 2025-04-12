@@ -279,16 +279,14 @@ void ShipBattle::reset(){
     setNextState("");
 }
 void ShipBattle::shieldEnergyBar(float currEnergy, float maxEnergy) {
-    int barX = ofGetWidth() - 300;
-    int barY = 90;
-    indicatorFont.drawString("SHIELD", barX - 60, barY + 15);
+    int barX = 85;
+    int barY = 110;
+    indicatorFont.drawString("SHIELD", 10, barY + 15);
     ofNoFill();
-    ofDrawRectangle(barX, barY, 200, 20);    
+    ofDrawRectangle(barX, barY, maxEnergy * 2, 20);    
     ofFill();
     ofSetColor(ofColor::cyan);
-    static float displayedEnergy = 0.0f;
-    displayedEnergy = ofLerp(displayedEnergy, currEnergy, 0.1f);
-    ofDrawRectangle(barX, barY, 200 * (displayedEnergy / maxEnergy), 20);
+    ofDrawRectangle(barX, barY, 200 * (currEnergy / maxEnergy), 20);
     ofSetColor(ofColor::white);
 }
 

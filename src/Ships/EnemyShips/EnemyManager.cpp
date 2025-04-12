@@ -150,7 +150,9 @@ void EnemyManager::manageCollisions(Player* player) {
     for (auto& Boss : bossList) {
         for (auto& bullet : Boss->getBullets()) {
             if (!bullet.bulletIsOutOfBounds() && player->hitBox.isHit(bullet)) {
-                if (player->isShieldActive()) {}
+                if (player->isShieldActive()) {
+                    SoundManager::playSong("Beam", false);
+                }
                 else {
                 player->health = max(player->health - 10.0, 0.0); 
                 }      // Player takes damage 

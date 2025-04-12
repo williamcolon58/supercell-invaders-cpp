@@ -22,7 +22,7 @@ void ofApp::setup(){
     SoundManager::loadSong("bulletSound", "Sounds/shootingSound.mp3");
     SoundManager::loadSong("Beam", "Sounds/Laser_Beam.mp3");
     SoundManager::loadSong("Cassandra Vex", "Sounds/SpaceStationBoss.mp3");
-
+    SoundManager::loadSong("ShieldSound", "Sounds/ShieldSound.mp3");
 //States
     intro = new IntroState();
     battle = new ShipBattle();

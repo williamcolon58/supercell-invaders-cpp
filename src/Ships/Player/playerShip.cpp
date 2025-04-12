@@ -82,16 +82,10 @@ void Player::update() {
     draw();  // Draw the ship
 
     if (shieldActive) {
-        shieldTimer -= ofGetLastFrameTime();  
-        if (shieldTimer <= 0)
-         {
-            shieldActive = false;  
-            shieldEnergy = 0;     
+        updateShield(ofGetLastFrameTime());
         }
-        decreaseShieldEnergy(SHIELD_MAX_ENERGY / 10.0f * ofGetLastFrameTime());
-    }
-    updateShield(ofGetLastFrameTime());
-}
+ }
+
 
 
 void Player::shoot() { 
@@ -204,16 +198,14 @@ void Player::activateShield() {
     if (shieldEnergy >= SHIELD_MAX_ENERGY && !shieldActive) {
         shieldActive = true;
         shieldEnergy = SHIELD_MAX_ENERGY;
-        shieldTimer = 10.0f;
-        SoundManager::playSong("Beam", false);
+        SoundManager::playSong("ShieldSound", false);
     }
 }
 void Player::updateShield(float deltaTime) {
     if (shieldActive) {
-        shieldEnergy -= 20.0f * deltaTime;
+        shieldEnergy = max(0.0f, shieldEnergy - SHIELD_DEPLETE_RATE);
         if (shieldEnergy <= 0) {
             shieldActive = false;
-            shieldEnergy = 0;
         }
     }
 }
@@ -277,12 +269,3 @@ void Player::takeDamage(float damage) {
     }
 }
 
-void Player::decreaseShieldEnergy(float amount){
-    if (shieldActive) {  
-        shieldEnergy -= amount;
-        if (shieldEnergy <= 0) {
-            shieldActive = false;  
-            shieldEnergy = 0;
-        }
-    }
-}
