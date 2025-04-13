@@ -132,8 +132,8 @@ void Player::processPressedKeys() {
     
     if(keyMap['w']) movement('w');
     if(keyMap['s']) movement('s');
-    if(keyMap['d']) movement('d');
-    if(keyMap['a']) movement('a');
+    if(keyMap['a']) shipOrientation -= rotationSpeed;
+    if(keyMap['d']) shipOrientation += rotationSpeed;
 
     if(keyMap[' ']) shoot();
    
@@ -146,6 +146,7 @@ void Player::processPressedKeys() {
 void Player::removePressedKey(int key) {
     key = tolower(key);
     keyMap[key] = false;
+    isMoving = keyMap['w'] || keyMap['s'] || keyMap['a'] || keyMap['d'];
 }
 
 void Player::movement(char keyPressed) {
